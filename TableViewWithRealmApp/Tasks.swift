@@ -9,5 +9,5 @@ import Foundation
 import RealmSwift
 
 class Tasks : Object {
-    @objc dynamic var task: String? = nil
+    @objc dynamic var task: String = ""
 }
