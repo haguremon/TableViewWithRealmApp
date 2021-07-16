@@ -68,26 +68,57 @@
                         <outlet property="tableView" destination="nF2-rp-Bxc" id="Irf-Ia-ZJU"/>
                         <outlet property="taskTextField" destination="r1o-M8-9Xd" id="3KT-5M-oMR"/>
                         <outlet property="testLabel" destination="DXa-hh-J1b" id="DSJ-n6-xwe"/>
+                        <segue destination="Nf9-df-K6l" kind="presentation" identifier="VC" modalPresentationStyle="fullScreen" id="cT4-BQ-obM"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-59.420289855072468" y="76.339285714285708"/>
         </scene>
-        <!--View Controller-->
+        <!--Create Date Task View Controller-->
         <scene sceneID="YoZ-s5-Ylf">
             <objects>
-                <viewController id="Nf9-df-K6l" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="VC" modalPresentationStyle="fullScreen" id="Nf9-df-K6l" customClass="CreateDateTaskViewController" customModule="TableViewWithRealmApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="lhb-rm-C53">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="作成日" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VeB-tD-JgE">
+                                <rect key="frame" x="41" y="91" width="316" height="38"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kNV-4I-9gK">
+                                <rect key="frame" x="41" y="429" width="326" height="38"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5NA-LS-iEJ">
+                                <rect key="frame" x="41" y="44" width="31" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="戻る"/>
+                                <connections>
+                                    <segue destination="HAn-Wd-CEz" kind="unwind" unwindAction="exitWithSegue:" id="AAg-aX-d7R"/>
+                                </connections>
+                            </button>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="Fq3-kc-t9u"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
+                    <navigationItem key="navigationItem" id="ijU-Cd-pxa"/>
+                    <connections>
+                        <outlet property="dateCreatedLabel" destination="VeB-tD-JgE" id="Ft7-C2-o5O"/>
+                        <outlet property="taskLabel" destination="kNV-4I-9gK" id="6KL-b9-ueE"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="K6p-hg-YYs" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <exit id="HAn-Wd-CEz" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="678" y="76"/>
+            <point key="canvasLocation" x="676.81159420289862" y="75.669642857142847"/>
         </scene>
     </scenes>
     <resources>
