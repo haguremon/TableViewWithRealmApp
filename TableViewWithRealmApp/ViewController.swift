@@ -16,16 +16,18 @@ class ViewController: UIViewController {
         UITextField!
     
     @IBOutlet weak var testLabel: UILabel!
-    
+    let realm = try! Realm()
     //var tasks: Results<Tasks>!
     
-    
-    var tasks = [String]()
+    var tasks: Results<Tasks>! //⇦これの意味がわからないから調べる7/16 20時
+    //var tasks = [String]()
     override func viewDidLoad() {
         super.viewDidLoad()
     // Do any additional setup after loading the view.
         tableView.dataSource = self
         tableView.delegate = self
+        self.tasks = realm.objects(Tasks.self)
+        self.tableView.reloadData()
         //print(tasks.count)
         print(Realm.Configuration.defaultConfiguration.fileURL!)
     }
@@ -46,10 +48,9 @@ class ViewController: UIViewController {
         let tasks = Tasks()
         tasks.task = taskTextField.text!
         do {
-            let realm = try Realm()
             try realm.write({
                 realm.add(tasks)
-                self.tasks.append(tasks.task)
+                //self.tasks.append(tasks.task)
             print(tasks)
             })
         } catch {
@@ -64,10 +65,10 @@ class ViewController: UIViewController {
     
     @IBAction func deleteAllButton(_ sender: UIButton) {
         do {
-           let realm = try Realm()
+           
             try realm.write {
                 realm.deleteAll()
-                self.tasks.removeAll()
+                //self.tasks.removeAll()
                 tableView.reloadData()
             }
         } catch  {
@@ -81,7 +82,7 @@ extension ViewController: UITableViewDataSource , UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     
-        return tasks.count
+        return self.tasks.count
         
     }
     
@@ -89,7 +90,8 @@ extension ViewController: UITableViewDataSource , UITableViewDelegate {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell")!
 //        let realm = try! Realm()
 //        let tasks = realm.objects(Tasks.self)
-        cell.textLabel!.text = tasks[indexPath.row]
+        let task = self.tasks[indexPath.row]
+        cell.textLabel!.text = task.task
         return cell
     }
 }
