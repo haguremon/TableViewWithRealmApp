@@ -7,18 +7,19 @@
 
 import UIKit
 import RealmSwift
-
 class ViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
     
     @IBOutlet weak var taskTextField:
         UITextField!
+        
     
+
     @IBOutlet weak var testLabel: UILabel!
     let realm = try! Realm()
     //var tasks: Results<Element>オブジェクトクエリから返される Realm の自動更新コンテナタイプでクリエなどで操作することができる7/16 22:20
-    
+    var tasksList: List<Tasks>!
     var tasks: Results<Tasks>! //⇦これの意味がわからないから調べる7/16 20時
     //var tasks = [String]()
     override func viewDidLoad() {
@@ -26,10 +27,15 @@ class ViewController: UIViewController {
     // Do any additional setup after loading the view.
         tableView.dataSource = self
         tableView.delegate = self
-        tasks = realm.objects(Tasks.self)//表示した時にTasksのデータを全て取得してる状態にしたい
+//        tasks = realm.objects(Tasks.self)//表示した時にTasksのデータを全て取得してる状態にしたい
+        tasks = realm.objects(Tasks.self)
+        tasksList = realm.objects(TasksList.self).first?.tasksList
         tableView.reloadData()
+        tableView.allowsSelectionDuringEditing = true
+        //tableView.isEditing = true
         //print(tasks.count)
         print(Realm.Configuration.defaultConfiguration.fileURL!)
+        taskTextField.resignFirstResponder()
     }
     func dialog(title: String,message: String){
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -45,17 +51,24 @@ class ViewController: UIViewController {
             dialog(title: "追加", message: "値が入っていません")
             return
         }
-        let tasks = Tasks()
+        let tasks = Tasks()//タップされた時に毎回インスタン化する
         tasks.task = taskTextField.text!
         let f = DateFormatter()
         f.setTemplate(.full)
         let now = Date()
         tasks.createAt = f.string(from: now) + "に作成されました"
+        
         do {
             try realm.write({
-                realm.add(tasks)
-                //self.tasks.append(tasks.task)
-            print(tasks)
+                if tasksList == nil {
+                    let tasksList = TasksList()
+                    tasksList.tasksList.append(tasks)
+                    realm.add(tasksList)
+                    self.tasksList = realm.objects(TasksList.self).first?.tasksList
+                print(tasks)
+                } else {
+                    self.tasksList.append(tasks)
+                }
             })
         } catch {
             print(error)
@@ -67,27 +80,66 @@ class ViewController: UIViewController {
 
     }
     
+    
+    
     @IBAction func deleteAllButton(_ sender: UIButton) {
         do {
-           
+            tasks = realm.objects(Tasks.self)
             try realm.write {
-                realm.deleteAll()
                 //self.tasks.removeAll()
+                realm.delete(tasks)
                 tableView.reloadData()
             }
         } catch  {
             print(error)
         }
     }
+    //昇順と降順にセルを並び替える
+    @IBAction func ascSwitchdec(_ sender: UISwitch) {
+        if sender.isOn {
+            try! realm.write({
+                 tasks = realm.objects(Tasks.self).sorted(byKeyPath: "task", ascending: false)
+                realm.add(tasks)
+
+            })
+            tableView.reloadData()
+            
+        } else {
+            
+            try! realm.write({
+                tasks = realm.objects(Tasks.self).sorted(byKeyPath: "task", ascending: true)
+                realm.add(tasks)
+            })
+            tableView.reloadData()
+
+        }
+        
+        
+    
+    
+    }
+    //セルの編集モード切り替えボタン
+    @IBAction func editingSwitch(_ sender: UISwitch) {
+        if sender.isOn {
+            tableView.isEditing = true
+        } else {
+            tableView.isEditing = false
+        }
+    
+    }
+    
+    
     @IBAction func exit(segue: UIStoryboardSegue){}
     
-
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        view.endEditing(true)
+    }
 }
 extension ViewController: UITableViewDataSource , UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     
-        return self.tasks.count
+        return tasks.count
         
     }
     
@@ -95,7 +147,7 @@ extension ViewController: UITableViewDataSource , UITableViewDelegate {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell")!
 //        let realm = try! Realm()
 //        let tasks = realm.objects(Tasks.self)
-        let tasks = self.tasks[indexPath.row]
+        let tasks = tasks[indexPath.row]
         cell.textLabel!.text = tasks.task
         return cell
     }
@@ -120,9 +172,24 @@ extension ViewController: UITableViewDataSource , UITableViewDelegate {
         vc.task = tasks[indexPath.row].task
         vc.createdLabel = tasks[indexPath.row].createAt
         self.present(vc, animated: true)
-    
-    
     }
+  //canMoveRowAtでセルを動かすことができる
+    func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
+      return true
+    }
+    func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        //並び替えをするときは List<Element>を定義してやった方がやりやすい
+        try! realm.write { //realm.writeで削除処理することができる
+            let tasks = tasks[sourceIndexPath.row]
+            tasksList.remove(at: sourceIndexPath.row)
+            tasksList.insert(tasks, at: destinationIndexPath.row)
+        }
+        
+    }
+     func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
+         return false
+     }
+
 }
 extension DateFormatter {
     enum Template: String {

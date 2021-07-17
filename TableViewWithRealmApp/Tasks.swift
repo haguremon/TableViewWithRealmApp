@@ -11,4 +11,10 @@ import RealmSwift
 class Tasks : Object {
     @objc dynamic var task: String = ""
     @objc dynamic var createAt = ""
+
 }
+
+class TasksList: Object {
+    var tasksList = List<Tasks>() //Tasks型の配列みたいな感じにできる
+}
+
