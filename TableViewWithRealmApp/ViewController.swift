@@ -13,45 +13,8 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var taskTextField:
         UITextField!
-        
-    
-
-    @IBOutlet weak var testLabel: UILabel!
-    let realm = try! Realm()
-    //var tasks: Results<Element>オブジェクトクエリから返される Realm の自動更新コンテナタイプでクリエなどで操作することができる7/16 22:20
-    var tasksList: List<Tasks>!
-    var tasks: Results<Tasks>! //⇦これの意味がわからないから調べる7/16 20時
-    //var tasks = [String]()
-    var count = 0
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    // Do any additional setup after loading the view.
-        tableView.dataSource = self
-        tableView.delegate = self
-//        tasks = realm.objects(Tasks.self)//表示した時にTasksのデータを全て取得してる状態にしたい
-        tasks = realm.objects(Tasks.self)
-        tasksList = realm.objects(TasksList.self).first?.tasksList
-        tableView.reloadData()
-        tableView.allowsSelectionDuringEditing = true
-        //tableView.isEditing = true
-        //print(tasks.count)
-        print(Realm.Configuration.defaultConfiguration.fileURL!)
-        taskTextField.resignFirstResponder()
-    }
-    func dialog(title: String,message: String){
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        present(alert, animated: true) {
-            DispatchQueue.main.asyncAfter(deadline: .now()+2) {
-                self.dismiss(animated: true)
-            }
-        }
-    }
-    
-    @IBAction func addTaskButton(_ sender: UIButton) {
-        guard !taskTextField.text!.isEmpty else {
-            dialog(title: "追加", message: "値が入っていません")
-            return
-        }
+    //タスクを作成する機能
+    func addTask(){
         let tasks = Tasks()//タップされた時に毎回インスタン化する
         tasks.task = taskTextField.text!
         let f = DateFormatter()
@@ -80,11 +43,74 @@ class ViewController: UIViewController {
         //print(self.tasks)
       testLabel.text = tasks.task
         tableView.reloadData()
+        taskTextField.text = ""
+        
+    }
+    
 
+    @IBOutlet weak var testLabel: UILabel!
+    let realm = try! Realm()
+    //var tasks: Results<Element>オブジェクトクエリから返される Realm の自動更新コンテナタイプでクリエなどで操作することができる7/16 22:20
+    var tasksList: List<Tasks>!
+    var tasks: Results<Tasks>! //⇦これの意味がわからないから調べる7/16 20時
+    //var tasks = [String]()
+    var count = 0
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    // Do any additional setup after loading the view.
+        tableView.dataSource = self
+        tableView.delegate = self
+        taskTextField.delegate = self
+        
+        //        tasks = realm.objects(Tasks.self)//表示した時にTasksのデータを全て取得してる状態にしたい
+        tasks = realm.objects(Tasks.self)
+        tasksList = realm.objects(TasksList.self).first?.tasksList
+        tableView.reloadData()
+        tableView.allowsSelectionDuringEditing = true
+        //tableView.isEditing = true
+        //print(tasks.count)
+        print(Realm.Configuration.defaultConfiguration.fileURL!)
+        taskTextField.resignFirstResponder()
+    }
+    func dialog(title: String,message: String){
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        present(alert, animated: true) {
+            DispatchQueue.main.asyncAfter(deadline: .now()+2) {
+                self.dismiss(animated: true)
+            }
+        }
     }
     
     
+    @IBAction func addTaskButton(_ sender: UIButton) {
+        guard !taskTextField.text!.isEmpty else {
+            dialog(title: "追加", message: "値が入っていません")
+            return
+        }
+        addTask()
+    }
+   //タスクをアップデートするボタン 7/18 18時
+    @IBAction func taskUpDateButton(_ sender: UIButton) {
+        if let selected = self.tableView.indexPathForSelectedRow {
+            let predicate = NSPredicate(format: "task == %@",tasks[selected.row].task)//task一致したやつを指定
+            if  let task = tasks.filter(predicate).first {//一致したデータを作る
+                
+
+            try! realm.write({
+                task.task = taskTextField.text! //taskTextFieldの値を入れる
+                let f = DateFormatter()
+                f.setTemplate(.full)
+                let now = Date()
+                task.createAt = f.string(from: now) + "に変更されました"
+                realm.add(task) //それを加えて書き換える
+            })
+            tableView.reloadData()
+        }
+        } else {
+            dialog(title: "アップデート", message: "タスクが選択されていません")
+        }
     
+    }
     @IBAction func deleteAllButton(_ sender: UIButton) {
         
         do {
@@ -99,6 +125,9 @@ class ViewController: UIViewController {
             print(error)
         }
     }
+
+    
+    
     //昇順と降順にセルを並び替える
     @IBAction func ascSwitchdec(_ sender: UISwitch) {
         if sender.isOn {
@@ -137,7 +166,7 @@ class ViewController: UIViewController {
     @IBAction func exit(segue: UIStoryboardSegue){}
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        view.endEditing(true)
+        self.view.endEditing(true)
     }
 }
 extension ViewController: UITableViewDataSource , UITableViewDelegate {
@@ -164,9 +193,11 @@ extension ViewController: UITableViewDataSource , UITableViewDelegate {
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             tableView.beginUpdates()
-           try! realm.write { //realm.writeで削除処理することができる
+            count -= 1
+            try! realm.write { //realm.writeで削除処理することができる
             self.realm.delete(tasks[indexPath.row])
             }
+            
             tableView.deleteRows(at: [indexPath], with: .fade)
             tableView.endUpdates()
         }
@@ -194,6 +225,20 @@ extension ViewController: UITableViewDataSource , UITableViewDelegate {
      func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
          return false
      }
+
+}
+//TextFielｄのイベント通知
+extension ViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        taskTextField.resignFirstResponder()//Returnが押された時にキーボードを閉じるようにする
+        
+        guard !taskTextField.text!.isEmpty else{
+            dialog(title: "未入力", message: "値が入っていません")
+            return false
+        }
+        addTask()
+        return true
+    }
 
 }
 extension DateFormatter {
