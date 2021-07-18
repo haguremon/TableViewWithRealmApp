@@ -22,6 +22,7 @@ class ViewController: UIViewController {
     var tasksList: List<Tasks>!
     var tasks: Results<Tasks>! //⇦これの意味がわからないから調べる7/16 20時
     //var tasks = [String]()
+    var count = 0
     override func viewDidLoad() {
         super.viewDidLoad()
     // Do any additional setup after loading the view.
@@ -57,7 +58,9 @@ class ViewController: UIViewController {
         f.setTemplate(.full)
         let now = Date()
         tasks.createAt = f.string(from: now) + "に作成されました"
-        tasks.id += 1
+        
+        count += 1
+        tasks.id = count
         do {
             try realm.write({
                 if tasksList == nil {
@@ -83,12 +86,14 @@ class ViewController: UIViewController {
     
     
     @IBAction func deleteAllButton(_ sender: UIButton) {
+        
         do {
             tasks = realm.objects(Tasks.self)
             try realm.write {
                 //self.tasks.removeAll()
                 realm.delete(tasks)
                 tableView.reloadData()
+                count = 0
             }
         } catch  {
             print(error)
