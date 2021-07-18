@@ -7,7 +7,7 @@
 
 import UIKit
 import RealmSwift
-class ViewController: UIViewController {
+class ViewController: UIViewController{
 
     @IBOutlet weak var tableView: UITableView!
     
@@ -46,7 +46,27 @@ class ViewController: UIViewController {
         taskTextField.text = ""
         
     }
-    
+    func taskUpDate(){
+        if let selected = self.tableView.indexPathForSelectedRow {
+            let predicate = NSPredicate(format: "task == %@",tasks[selected.row].task)//task一致したやつを指定
+            if  let task = tasks.filter(predicate).first {//一致したデータを作る
+                
+
+            try! realm.write({
+                task.task = taskTextField.text! //taskTextFieldの値を入れる
+                let f = DateFormatter()
+                f.setTemplate(.full)
+                let now = Date()
+                task.createAt = f.string(from: now) + "に変更されました"
+                realm.add(task) //それを加えて書き換える
+            })
+                tableView.reloadData()
+                
+        }
+        } else {
+            dialog(title: "アップデート", message: "タスクが選択されていません")
+        }
+    }
 
     @IBOutlet weak var testLabel: UILabel!
     let realm = try! Realm()
@@ -88,27 +108,14 @@ class ViewController: UIViewController {
             return
         }
         addTask()
+        //tableView.scrollRectToVisible(.infinite, animated: true)
+        tableView.scrollToNearestSelectedRow(at: .middle, animated: true)
+        taskTextField.resignFirstResponder()
+        taskTextField.text = ""
     }
    //タスクをアップデートするボタン 7/18 18時
     @IBAction func taskUpDateButton(_ sender: UIButton) {
-        if let selected = self.tableView.indexPathForSelectedRow {
-            let predicate = NSPredicate(format: "task == %@",tasks[selected.row].task)//task一致したやつを指定
-            if  let task = tasks.filter(predicate).first {//一致したデータを作る
-                
-
-            try! realm.write({
-                task.task = taskTextField.text! //taskTextFieldの値を入れる
-                let f = DateFormatter()
-                f.setTemplate(.full)
-                let now = Date()
-                task.createAt = f.string(from: now) + "に変更されました"
-                realm.add(task) //それを加えて書き換える
-            })
-            tableView.reloadData()
-        }
-        } else {
-            dialog(title: "アップデート", message: "タスクが選択されていません")
-        }
+        taskUpDate()
     
     }
     @IBAction func deleteAllButton(_ sender: UIButton) {
@@ -130,21 +137,28 @@ class ViewController: UIViewController {
     
     //昇順と降順にセルを並び替える
     @IBAction func ascSwitchdec(_ sender: UISwitch) {
+        
         if sender.isOn {
+            //この二つでちゃんと昇順と降順で表示するよになった
+            tasks = realm.objects(Tasks.self).sorted(byKeyPath: "task", ascending: false)
+            tasks = realm.objects(Tasks.self).sorted(byKeyPath: "createAt", ascending: false)
+            //tasks = realm.objects(Tasks.self).sorted(byKeyPath: "id", ascending: false)
+            
             try! realm.write({
-                 tasks = realm.objects(Tasks.self).sorted(byKeyPath: "task", ascending: false)
                 realm.add(tasks)
-
             })
             tableView.reloadData()
             
         } else {
-            
+            tasks = realm.objects(Tasks.self).sorted(byKeyPath: "task", ascending: true)
+            tasks = realm.objects(Tasks.self).sorted(byKeyPath: "createAt", ascending: true)
+            //tasks = realm.objects(Tasks.self).sorted(byKeyPath: "id", ascending: true)
             try! realm.write({
-                tasks = realm.objects(Tasks.self).sorted(byKeyPath: "task", ascending: true)
                 realm.add(tasks)
             })
+        
             tableView.reloadData()
+
 
         }
         
@@ -166,6 +180,7 @@ class ViewController: UIViewController {
     @IBAction func exit(segue: UIStoryboardSegue){}
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.tableView.endEditing(true)
         self.view.endEditing(true)
     }
 }
@@ -173,16 +188,16 @@ extension ViewController: UITableViewDataSource , UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     
-        return tasks.count
+        return tasksList.count
         
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell")!
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell") ?? UITableViewCell(style: .default, reuseIdentifier: "cell")
 //        let realm = try! Realm()
 //        let tasks = realm.objects(Tasks.self)
-        let tasks = tasks[indexPath.row]
-        cell.textLabel!.text = tasks.task
+        let tasks = tasks[indexPath.row].task
+        cell.textLabel!.text = tasks
         return cell
     }
     //スワイプして任意のセルを削除する処理追加 7/16 23時
@@ -227,20 +242,6 @@ extension ViewController: UITableViewDataSource , UITableViewDelegate {
      }
 
 }
-//TextFielｄのイベント通知
-extension ViewController: UITextFieldDelegate {
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        taskTextField.resignFirstResponder()//Returnが押された時にキーボードを閉じるようにする
-        
-        guard !taskTextField.text!.isEmpty else{
-            dialog(title: "未入力", message: "値が入っていません")
-            return false
-        }
-        addTask()
-        return true
-    }
-
-}
 extension DateFormatter {
     enum Template: String {
         case date = "yMd"     // 2021/1/1
@@ -256,5 +257,6 @@ extension DateFormatter {
         dateFormat = DateFormatter.dateFormat(fromTemplate: template.rawValue, options: 0, locale: .current)
     }
 }
+
 
 
