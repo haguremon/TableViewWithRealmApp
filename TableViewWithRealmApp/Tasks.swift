@@ -11,7 +11,7 @@ import RealmSwift
 class Tasks : Object {
     @objc dynamic var task: String = ""
     @objc dynamic var createAt = ""
-
+    @objc dynamic var id = 0
 }
 
 class TasksList: Object {

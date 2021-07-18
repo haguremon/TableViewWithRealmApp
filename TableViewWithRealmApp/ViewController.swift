@@ -57,7 +57,7 @@ class ViewController: UIViewController {
         f.setTemplate(.full)
         let now = Date()
         tasks.createAt = f.string(from: now) + "に作成されました"
-        
+        tasks.id += 1
         do {
             try realm.write({
                 if tasksList == nil {
