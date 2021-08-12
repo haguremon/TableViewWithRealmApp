@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		6D9E7287C3B15F6A49E4D678 /* Pods_TableViewWithRealmApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 686F5A3F5268047EE55BB977 /* Pods_TableViewWithRealmApp.framework */; };
 		CF701EE026A429DD005ED6A5 /* extensionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF701EDF26A429DD005ED6A5 /* extensionVC.swift */; };
+		CF8C3F7A26A6D6E600FFFA4F /* extensionVCTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8C3F7926A6D6E600FFFA4F /* extensionVCTable.swift */; };
 		CFEBD9EE26A1CC0100092316 /* CreateDateTaskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFEBD9ED26A1CC0100092316 /* CreateDateTaskViewController.swift */; };
 		CFFE577B26A175E10038C275 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFFE577A26A175E10038C275 /* AppDelegate.swift */; };
 		CFFE577D26A175E10038C275 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFFE577C26A175E10038C275 /* SceneDelegate.swift */; };
@@ -23,6 +24,7 @@
 		4D7D3D3617ED7458618E67CF /* Pods-TableViewWithRealmApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TableViewWithRealmApp.debug.xcconfig"; path = "Target Support Files/Pods-TableViewWithRealmApp/Pods-TableViewWithRealmApp.debug.xcconfig"; sourceTree = "<group>"; };
 		686F5A3F5268047EE55BB977 /* Pods_TableViewWithRealmApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TableViewWithRealmApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CF701EDF26A429DD005ED6A5 /* extensionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = extensionVC.swift; sourceTree = "<group>"; };
+		CF8C3F7926A6D6E600FFFA4F /* extensionVCTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = extensionVCTable.swift; sourceTree = "<group>"; };
 		CFEBD9ED26A1CC0100092316 /* CreateDateTaskViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateDateTaskViewController.swift; sourceTree = "<group>"; };
 		CFFE577726A175E10038C275 /* TableViewWithRealmApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TableViewWithRealmApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CFFE577A26A175E10038C275 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -65,6 +67,33 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		CF0AA2DA26BC1FE600DEC67F /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				CFFE578E26A1785F0038C275 /* Tasks.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		CF0AA2DB26BC1FFD00DEC67F /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				CFFE578026A175E10038C275 /* Main.storyboard */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		CF0AA2DC26BC201600DEC67F /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				CFFE577E26A175E10038C275 /* ViewController.swift */,
+				CF8C3F7926A6D6E600FFFA4F /* extensionVCTable.swift */,
+				CF701EDF26A429DD005ED6A5 /* extensionVC.swift */,
+				CFEBD9ED26A1CC0100092316 /* CreateDateTaskViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
 		CFFE576E26A175E10038C275 = {
 			isa = PBXGroup;
 			children = (
@@ -88,11 +117,9 @@
 			children = (
 				CFFE577A26A175E10038C275 /* AppDelegate.swift */,
 				CFFE577C26A175E10038C275 /* SceneDelegate.swift */,
-				CFFE577E26A175E10038C275 /* ViewController.swift */,
-				CF701EDF26A429DD005ED6A5 /* extensionVC.swift */,
-				CFEBD9ED26A1CC0100092316 /* CreateDateTaskViewController.swift */,
-				CFFE578E26A1785F0038C275 /* Tasks.swift */,
-				CFFE578026A175E10038C275 /* Main.storyboard */,
+				CF0AA2DC26BC201600DEC67F /* Controller */,
+				CF0AA2DB26BC1FFD00DEC67F /* Views */,
+				CF0AA2DA26BC1FE600DEC67F /* Model */,
 				CFFE578326A175E40038C275 /* Assets.xcassets */,
 				CFFE578526A175E40038C275 /* LaunchScreen.storyboard */,
 				CFFE578826A175E40038C275 /* Info.plist */,
@@ -215,6 +242,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CFFE578F26A1785F0038C275 /* Tasks.swift in Sources */,
+				CF8C3F7A26A6D6E600FFFA4F /* extensionVCTable.swift in Sources */,
 				CFEBD9EE26A1CC0100092316 /* CreateDateTaskViewController.swift in Sources */,
 				CF701EE026A429DD005ED6A5 /* extensionVC.swift in Sources */,
 				CFFE577F26A175E10038C275 /* ViewController.swift in Sources */,
